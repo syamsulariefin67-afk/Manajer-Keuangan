@@ -1,0 +1,1450 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manager Keuangan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        .premium-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        .luxury-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+        }
+        .luxury-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        .progress-bar {
+            transition: all 0.3s ease;
+        }
+        .premium-input {
+            background: white;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+        .premium-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            outline: none;
+        }
+        .category-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+        .category-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        .luxury-progress {
+            background: #f1f5f9;
+        }
+        .expense-row {
+            background: white;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+        .expense-row:hover {
+            transform: translateX(2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .monitoring-card {
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen font-sans">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-5xl font-bold text-white mb-4">💰 Manager Keuangan</h1>
+            <p class="text-xl text-white/90">Sistem Manajemen Keuangan dengan Metode 50-20-20-10</p>
+        </div>
+
+        <!-- Input Pemasukan -->
+        <div class="glass-card rounded-2xl p-8 mb-12 max-w-lg mx-auto">
+            <div class="text-center mb-6">
+                <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full mb-4 shadow-lg">
+                    <span class="text-2xl">💰</span>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">Kalkulator Pendapatan</h2>
+                <p class="text-gray-600 text-sm">Masukkan pendapatan bulanan Anda</p>
+            </div>
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-3">Jumlah Pemasukan Bulanan</label>
+                    <div class="relative">
+                        <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 font-semibold">Rp</span>
+                        <input type="number" id="income" placeholder="0" 
+                               class="w-full pl-12 pr-4 py-4 premium-input rounded-xl text-lg font-semibold text-gray-800 placeholder-gray-400">
+                    </div>
+                </div>
+                <button onclick="calculateBudget()" 
+                        class="w-full luxury-button text-white font-semibold py-4 px-8 rounded-xl text-lg">
+                    <span class="flex items-center justify-center space-x-2">
+                        <span>✨</span>
+                        <span>Analisis Keuangan</span>
+                        <span>✨</span>
+                    </span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Hasil Pembagian -->
+        <div id="budgetResult" class="hidden">
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+                <!-- Kebutuhan Sehari-hari -->
+                <div class="category-card rounded-2xl p-6 shadow-2xl">
+                    <div class="flex items-center mb-6">
+                        <div class="w-14 h-14 bg-gradient-to-br from-emerald-400 to-green-600 rounded-2xl flex items-center justify-center mr-4 shadow-lg">
+                            <span class="text-2xl">🛒</span>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-800 text-lg">Kebutuhan Harian</h3>
+                            <p class="text-sm text-gray-500 font-medium">Penting • 50%</p>
+                        </div>
+                    </div>
+                    <div class="luxury-progress rounded-full h-3 mb-4 overflow-hidden">
+                        <div class="bg-gradient-to-r from-emerald-400 to-green-600 h-3 rounded-full progress-bar shadow-inner" style="width: 50%"></div>
+                    </div>
+                    <p class="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-green-700 bg-clip-text text-transparent mb-2" id="dailyNeeds">Rp 0</p>
+                    <p class="text-sm text-gray-600 mb-4 font-medium">Makanan, transportasi, tagihan</p>
+                    <div class="space-y-1 text-xs">
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Terpakai:</span>
+                            <span id="usedDaily" class="font-bold text-gray-700">Rp 0</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Tersisa:</span>
+                            <span id="remainingDaily" class="font-bold text-emerald-600">Rp 0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Keinginan -->
+                <div class="category-card rounded-2xl p-6 shadow-2xl">
+                    <div class="flex items-center mb-6">
+                        <div class="w-14 h-14 bg-gradient-to-br from-purple-400 to-violet-600 rounded-2xl flex items-center justify-center mr-4 shadow-lg">
+                            <span class="text-2xl">🎯</span>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-800 text-lg">Keinginan</h3>
+                            <p class="text-sm text-gray-500 font-medium">Gaya Hidup • 20%</p>
+                        </div>
+                    </div>
+                    <div class="luxury-progress rounded-full h-3 mb-4 overflow-hidden">
+                        <div class="bg-gradient-to-r from-purple-400 to-violet-600 h-3 rounded-full progress-bar shadow-inner" style="width: 20%"></div>
+                    </div>
+                    <p class="text-3xl font-bold bg-gradient-to-r from-purple-600 to-violet-700 bg-clip-text text-transparent mb-2" id="wants">Rp 0</p>
+                    <p class="text-sm text-gray-600 mb-4 font-medium">Barang impian, hiburan</p>
+                    <div class="space-y-1 text-xs">
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Terpakai:</span>
+                            <span id="usedWants" class="font-bold text-gray-700">Rp 0</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Tersisa:</span>
+                            <span id="remainingWants" class="font-bold text-purple-600">Rp 0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabungan -->
+                <div class="category-card rounded-2xl p-6 shadow-2xl">
+                    <div class="flex items-center mb-6">
+                        <div class="w-14 h-14 bg-gradient-to-br from-blue-400 to-cyan-600 rounded-2xl flex items-center justify-center mr-4 shadow-lg">
+                            <span class="text-2xl">💎</span>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-800 text-lg">Tabungan</h3>
+                            <p class="text-sm text-gray-500 font-medium">Investasi • 20%</p>
+                        </div>
+                    </div>
+                    <div class="luxury-progress rounded-full h-3 mb-4 overflow-hidden">
+                        <div class="bg-gradient-to-r from-blue-400 to-cyan-600 h-3 rounded-full progress-bar shadow-inner" style="width: 20%"></div>
+                    </div>
+                    <p class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-cyan-700 bg-clip-text text-transparent mb-2" id="savings">Rp 0</p>
+                    <p class="text-sm text-gray-600 mb-4 font-medium">Dana darurat, investasi</p>
+                    <div class="space-y-1 text-xs">
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Terpakai:</span>
+                            <span id="usedSavings" class="font-bold text-gray-700">Rp 0</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Tersisa:</span>
+                            <span id="remainingSavings" class="font-bold text-blue-600">Rp 0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sosial -->
+                <div class="category-card rounded-2xl p-6 shadow-2xl">
+                    <div class="flex items-center mb-6">
+                        <div class="w-14 h-14 bg-gradient-to-br from-orange-400 to-red-500 rounded-2xl flex items-center justify-center mr-4 shadow-lg">
+                            <span class="text-2xl">🤝</span>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-800 text-lg">Sosial</h3>
+                            <p class="text-sm text-gray-500 font-medium">Amal • 10%</p>
+                        </div>
+                    </div>
+                    <div class="luxury-progress rounded-full h-3 mb-4 overflow-hidden">
+                        <div class="bg-gradient-to-r from-orange-400 to-red-500 h-3 rounded-full progress-bar shadow-inner" style="width: 10%"></div>
+                    </div>
+                    <p class="text-3xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent mb-2" id="social">Rp 0</p>
+                    <p class="text-sm text-gray-600 mb-4 font-medium">Sumbangan, sedekah</p>
+                    <div class="space-y-1 text-xs">
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Terpakai:</span>
+                            <span id="usedSocial" class="font-bold text-gray-700">Rp 0</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Tersisa:</span>
+                            <span id="remainingSocial" class="font-bold text-orange-600">Rp 0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary -->
+            <div class="premium-card rounded-3xl p-8 max-w-3xl mx-auto">
+                <div class="text-center mb-8">
+                    <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl mb-4 shadow-lg">
+                        <span class="text-2xl">📊</span>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-2">Ringkasan Keuangan</h3>
+                    <p class="text-gray-600">Ringkasan lengkap alokasi keuangan Anda</p>
+                </div>
+                <div class="space-y-6">
+                    <div class="flex justify-between items-center py-4 border-b border-gray-200">
+                        <span class="text-lg text-gray-600 font-medium">Total Pendapatan Bulanan:</span>
+                        <span class="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent" id="totalIncome">Rp 0</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-6 mt-6">
+                        <div class="text-center p-6 bg-gradient-to-br from-emerald-50 to-green-100 rounded-2xl border border-emerald-200 shadow-lg">
+                            <div class="w-12 h-12 bg-gradient-to-br from-emerald-400 to-green-600 rounded-xl mx-auto mb-3 flex items-center justify-center">
+                                <span class="text-xl">💸</span>
+                            </div>
+                            <p class="text-sm text-gray-600 font-medium mb-2">Anggaran Pengeluaran</p>
+                            <p class="text-2xl font-bold text-emerald-700 mb-1" id="spending">Rp 0</p>
+                            <p class="text-xs text-gray-500 font-medium">70% • Kebutuhan + Keinginan</p>
+                        </div>
+                        <div class="text-center p-6 bg-gradient-to-br from-blue-50 to-cyan-100 rounded-2xl border border-blue-200 shadow-lg">
+                            <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-cyan-600 rounded-xl mx-auto mb-3 flex items-center justify-center">
+                                <span class="text-xl">💰</span>
+                            </div>
+                            <p class="text-sm text-gray-600 font-medium mb-2">Dana Masa Depan</p>
+                            <p class="text-2xl font-bold text-blue-700 mb-1" id="saving">Rp 0</p>
+                            <p class="text-xs text-gray-500 font-medium">30% • Tabungan + Sosial</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reset Button -->
+            <div class="text-center mt-8">
+                <button onclick="resetCalculator()" 
+                        class="luxury-button text-white font-semibold py-3 px-8 rounded-xl transition-all duration-300 hover:scale-105">
+                    <span class="flex items-center space-x-2">
+                        <span>🔄</span>
+                        <span>Reset Kalkulator</span>
+                    </span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Pencatatan Pengeluaran -->
+        <div id="expenseSection" class="hidden mt-12">
+            <div class="premium-card rounded-3xl p-8 max-w-6xl mx-auto">
+                <div class="text-center mb-8">
+                    <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-rose-500 to-pink-600 rounded-2xl mb-4 shadow-lg">
+                        <span class="text-2xl">📝</span>
+                    </div>
+                    <h2 class="text-3xl font-bold text-gray-800 mb-2">Pencatat Pengeluaran</h2>
+                    <p class="text-gray-600">Catat dan monitor setiap pengeluaran dengan detail</p>
+                </div>
+                
+                <!-- Form Input Pengeluaran -->
+                <div class="grid md:grid-cols-3 gap-8 mb-8">
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-3">📅 Tanggal Transaksi</label>
+                            <input type="date" id="expenseDate" 
+                                   class="w-full px-4 py-4 premium-input rounded-xl text-gray-800 font-medium">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-3">🏷️ Kategori Pengeluaran</label>
+                            <select id="expenseType" onchange="updateCurrentBalance()"
+                                    class="w-full px-4 py-4 premium-input rounded-xl text-gray-800 font-medium">
+                                <option value="">Pilih kategori pengeluaran</option>
+                                <option value="kebutuhan">🛒 Kebutuhan Harian</option>
+                                <option value="keinginan">🎯 Keinginan</option>
+                                <option value="tabungan">💎 Tabungan</option>
+                                <option value="sosial">🤝 Sosial</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-3">📋 Deskripsi</label>
+                            <input type="text" id="expenseDescription" placeholder="Contoh: Belanja groceries mingguan" 
+                                   class="w-full px-4 py-4 premium-input rounded-xl text-gray-800 font-medium">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-3">💰 Jumlah Pengeluaran</label>
+                            <div class="relative">
+                                <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 font-semibold">Rp</span>
+                                <input type="number" id="expenseAmount" placeholder="0" 
+                                       class="w-full pl-12 pr-4 py-4 premium-input rounded-xl text-gray-800 font-medium">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-3">💳 Saldo Tersedia</label>
+                            <div id="currentBalance" class="w-full px-4 py-4 bg-gradient-to-r from-gray-50 to-gray-100 border border-gray-200 rounded-xl text-gray-600 font-semibold">
+                                Pilih kategori terlebih dahulu
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-3">📊 Saldo Setelah Transaksi</label>
+                            <div id="balanceAfter" class="w-full px-4 py-4 bg-gradient-to-r from-gray-50 to-gray-100 border border-gray-200 rounded-xl text-gray-600 font-semibold">
+                                -
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mb-8">
+                    <button onclick="addExpense()" 
+                            class="luxury-button text-white font-semibold py-4 px-12 rounded-xl text-lg transition-all duration-300 hover:scale-105">
+                        <span class="flex items-center space-x-3">
+                            <span>➕</span>
+                            <span>Tambah Pengeluaran</span>
+                            <span>💫</span>
+                        </span>
+                    </button>
+                </div>
+
+                <!-- Monitoring Saldo Real-time -->
+                <div id="saldomonitoring" class="hidden mb-8 monitoring-card rounded-2xl p-8">
+                    <div class="text-center mb-6">
+                        <h3 class="text-2xl font-bold text-white mb-2">📊 Monitor Saldo Real-time</h3>
+                        <p class="text-white/70">Pantau penggunaan budget secara real-time</p>
+                    </div>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                        <div class="category-card rounded-2xl p-6 text-center shadow-lg">
+                            <div class="w-12 h-12 bg-gradient-to-br from-emerald-400 to-green-600 rounded-xl mx-auto mb-3 flex items-center justify-center">
+                                <span class="text-xl">🛒</span>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-2 font-medium">Kebutuhan Harian</p>
+                            <p class="text-xl font-bold text-emerald-600 mb-3" id="monitorDaily">Rp 0</p>
+                            <div class="w-full luxury-progress rounded-full h-3 mb-2 overflow-hidden">
+                                <div id="progressDaily" class="bg-gradient-to-r from-emerald-400 to-green-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+                            </div>
+                            <p class="text-xs text-gray-500 font-medium"><span id="percentDaily">0%</span> used</p>
+                        </div>
+                        <div class="category-card rounded-2xl p-6 text-center shadow-lg">
+                            <div class="w-12 h-12 bg-gradient-to-br from-purple-400 to-violet-600 rounded-xl mx-auto mb-3 flex items-center justify-center">
+                                <span class="text-xl">🎯</span>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-2 font-medium">Desires</p>
+                            <p class="text-xl font-bold text-purple-600 mb-3" id="monitorWants">Rp 0</p>
+                            <div class="w-full luxury-progress rounded-full h-3 mb-2 overflow-hidden">
+                                <div id="progressWants" class="bg-gradient-to-r from-purple-400 to-violet-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+                            </div>
+                            <p class="text-xs text-gray-500 font-medium"><span id="percentWants">0%</span> used</p>
+                        </div>
+                        <div class="category-card rounded-2xl p-6 text-center shadow-lg">
+                            <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-cyan-600 rounded-xl mx-auto mb-3 flex items-center justify-center">
+                                <span class="text-xl">💎</span>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-2 font-medium">Savings</p>
+                            <p class="text-xl font-bold text-blue-600 mb-3" id="monitorSavings">Rp 0</p>
+                            <div class="w-full luxury-progress rounded-full h-3 mb-2 overflow-hidden">
+                                <div id="progressSavings" class="bg-gradient-to-r from-blue-400 to-cyan-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+                            </div>
+                            <p class="text-xs text-gray-500 font-medium"><span id="percentSavings">0%</span> used</p>
+                        </div>
+                        <div class="category-card rounded-2xl p-6 text-center shadow-lg">
+                            <div class="w-12 h-12 bg-gradient-to-br from-orange-400 to-red-500 rounded-xl mx-auto mb-3 flex items-center justify-center">
+                                <span class="text-xl">🤝</span>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-2 font-medium">Social</p>
+                            <p class="text-xl font-bold text-orange-600 mb-3" id="monitorSocial">Rp 0</p>
+                            <div class="w-full luxury-progress rounded-full h-3 mb-2 overflow-hidden">
+                                <div id="progressSocial" class="bg-gradient-to-r from-orange-400 to-red-500 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+                            </div>
+                            <p class="text-xs text-gray-500 font-medium"><span id="percentSocial">0%</span> used</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Daftar Pengeluaran -->
+                <div id="expenseList" class="space-y-6">
+                    <div class="text-center">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-2">📋 Transaction History</h3>
+                        <p class="text-gray-600">Detail lengkap setiap transaksi dengan monitoring saldo</p>
+                    </div>
+                    
+                    <!-- Header Tabel -->
+                    <div id="expenseTableHeader" class="hidden bg-gradient-to-r from-gray-100 to-gray-50 rounded-2xl p-6 grid grid-cols-12 gap-3 text-sm font-bold text-gray-700 shadow-sm">
+                        <div class="col-span-2">📅 Tanggal</div>
+                        <div class="col-span-2">🏷️ Kategori</div>
+                        <div class="col-span-2">📋 Deskripsi</div>
+                        <div class="col-span-2">💰 Jumlah</div>
+                        <div class="col-span-2">💳 Saldo Sebelum</div>
+                        <div class="col-span-1">📊 Saldo Sesudah</div>
+                        <div class="col-span-1">⚙️ Aksi</div>
+                    </div>
+                    
+                    <div id="expenseItems" class="space-y-3">
+                        <div class="text-center py-12">
+                            <div class="w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center">
+                                <span class="text-3xl text-gray-400">📝</span>
+                            </div>
+                            <p class="text-gray-500 text-lg font-medium">Belum ada transaksi yang dicatat</p>
+                            <p class="text-gray-400 text-sm mt-1">Mulai tambahkan pengeluaran untuk melihat riwayat</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rekapitulasi Bulanan -->
+                <div id="monthlyRecap" class="mt-8 premium-card rounded-3xl p-8 shadow-2xl">
+                    <div class="text-center mb-8">
+                        <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl mb-4 shadow-lg">
+                            <span class="text-2xl">📊</span>
+                        </div>
+                        <h3 class="text-3xl font-bold text-gray-800 mb-2">Rekapitulasi Bulanan</h3>
+                        <p class="text-gray-600">Analisis lengkap keuangan dengan laporan yang dapat diunduh</p>
+                    </div>
+
+                    <!-- Filter Bulan -->
+                    <div class="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-6 mb-8">
+                        <div class="flex items-center space-x-3">
+                            <label class="text-sm font-medium text-gray-700">📅 Pilih Periode:</label>
+                            <select id="monthFilter" onchange="updateMonthlyRecap()" 
+                                    class="px-4 py-2 premium-input rounded-xl text-gray-800 font-medium">
+                                <option value="">Semua Transaksi</option>
+                            </select>
+                        </div>
+                        <div class="flex space-x-3">
+                            <button onclick="downloadPDF()" 
+                                    class="luxury-button text-white font-semibold py-2 px-6 rounded-xl text-sm transition-all duration-300 hover:scale-105">
+                                <span class="flex items-center space-x-2">
+                                    <span>📄</span>
+                                    <span>Download PDF</span>
+                                </span>
+                            </button>
+                            <button onclick="downloadExcel()" 
+                                    class="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold py-2 px-6 rounded-xl text-sm transition-all duration-300 hover:scale-105 shadow-lg">
+                                <span class="flex items-center space-x-2">
+                                    <span>📊</span>
+                                    <span>Download Excel</span>
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Ringkasan Periode -->
+                    <div id="periodSummary" class="grid md:grid-cols-3 gap-6 mb-8">
+                        <div class="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl p-6 border border-blue-200 shadow-lg">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
+                                    <span class="text-xl text-white">📈</span>
+                                </div>
+                                <span class="text-xs font-medium text-blue-600 bg-blue-100 px-2 py-1 rounded-full">PERIODE</span>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-2 font-medium">Total Pendapatan</p>
+                            <p class="text-2xl font-bold text-blue-700" id="periodIncome">Rp 0</p>
+                            <p class="text-xs text-gray-500 mt-1" id="periodRange">-</p>
+                        </div>
+                        <div class="bg-gradient-to-br from-red-50 to-rose-100 rounded-2xl p-6 border border-red-200 shadow-lg">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="w-12 h-12 bg-gradient-to-br from-red-500 to-rose-600 rounded-xl flex items-center justify-center">
+                                    <span class="text-xl text-white">💸</span>
+                                </div>
+                                <span class="text-xs font-medium text-red-600 bg-red-100 px-2 py-1 rounded-full">PENGELUARAN</span>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-2 font-medium">Total Pengeluaran</p>
+                            <p class="text-2xl font-bold text-red-700" id="periodExpense">Rp 0</p>
+                            <p class="text-xs text-gray-500 mt-1" id="expenseCount">0 transaksi</p>
+                        </div>
+                        <div class="bg-gradient-to-br from-green-50 to-emerald-100 rounded-2xl p-6 border border-green-200 shadow-lg">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center">
+                                    <span class="text-xl text-white">💰</span>
+                                </div>
+                                <span class="text-xs font-medium text-green-600 bg-green-100 px-2 py-1 rounded-full">SALDO</span>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-2 font-medium">Sisa Saldo</p>
+                            <p class="text-2xl font-bold text-green-700" id="periodBalance">Rp 0</p>
+                            <p class="text-xs mt-1" id="balanceStatus">-</p>
+                        </div>
+                    </div>
+
+                    <!-- Grafik Pengeluaran per Kategori -->
+                    <div class="bg-white rounded-2xl p-6 shadow-lg mb-8">
+                        <h4 class="text-lg font-bold text-gray-800 mb-6 text-center">📊 Distribusi Pengeluaran per Kategori</h4>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="categoryChart">
+                            <!-- Chart akan diisi oleh JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Tren Harian -->
+                    <div class="bg-white rounded-2xl p-6 shadow-lg mb-8">
+                        <h4 class="text-lg font-bold text-gray-800 mb-6 text-center">📈 Tren Pengeluaran Harian</h4>
+                        <div id="dailyTrend" class="space-y-3">
+                            <!-- Tren akan diisi oleh JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Summary Pengeluaran -->
+                <div id="expenseSummary" class="mt-8 bg-gradient-to-br from-slate-50 to-gray-100 rounded-2xl p-8 border border-gray-200 shadow-lg">
+                    <div class="text-center mb-6">
+                        <div class="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-amber-400 to-orange-500 rounded-2xl mb-3 shadow-lg">
+                            <span class="text-2xl">💰</span>
+                        </div>
+                        <h4 class="text-xl font-bold text-gray-800 mb-1">Ringkasan Pengeluaran</h4>
+                        <p class="text-gray-600 text-sm">Total pengeluaran per kategori</p>
+                    </div>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-6">
+                        <div class="text-center p-4 bg-white rounded-xl shadow-sm border border-emerald-100">
+                            <div class="w-10 h-10 bg-gradient-to-br from-emerald-400 to-green-600 rounded-lg mx-auto mb-2 flex items-center justify-center">
+                                <span class="text-sm">🛒</span>
+                            </div>
+                            <p class="text-xs text-gray-600 mb-1 font-medium">Daily Needs</p>
+                            <p class="text-lg font-bold text-emerald-600" id="spentDaily">Rp 0</p>
+                        </div>
+                        <div class="text-center p-4 bg-white rounded-xl shadow-sm border border-purple-100">
+                            <div class="w-10 h-10 bg-gradient-to-br from-purple-400 to-violet-600 rounded-lg mx-auto mb-2 flex items-center justify-center">
+                                <span class="text-sm">🎯</span>
+                            </div>
+                            <p class="text-xs text-gray-600 mb-1 font-medium">Desires</p>
+                            <p class="text-lg font-bold text-purple-600" id="spentWants">Rp 0</p>
+                        </div>
+                        <div class="text-center p-4 bg-white rounded-xl shadow-sm border border-blue-100">
+                            <div class="w-10 h-10 bg-gradient-to-br from-blue-400 to-cyan-600 rounded-lg mx-auto mb-2 flex items-center justify-center">
+                                <span class="text-sm">💎</span>
+                            </div>
+                            <p class="text-xs text-gray-600 mb-1 font-medium">Savings</p>
+                            <p class="text-lg font-bold text-blue-600" id="spentSavings">Rp 0</p>
+                        </div>
+                        <div class="text-center p-4 bg-white rounded-xl shadow-sm border border-orange-100">
+                            <div class="w-10 h-10 bg-gradient-to-br from-orange-400 to-red-500 rounded-lg mx-auto mb-2 flex items-center justify-center">
+                                <span class="text-sm">🤝</span>
+                            </div>
+                            <p class="text-xs text-gray-600 mb-1 font-medium">Social</p>
+                            <p class="text-lg font-bold text-orange-600" id="spentSocial">Rp 0</p>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl p-6 border-t-4 border-gradient-to-r from-indigo-500 to-purple-600 shadow-sm">
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
+                                    <span class="text-white text-sm">💸</span>
+                                </div>
+                                <span class="text-lg font-bold text-gray-800">Total Expenses:</span>
+                            </div>
+                            <span class="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent" id="totalSpent">Rp 0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let expenses = [];
+        let budgetLimits = {
+            kebutuhan: 0,
+            keinginan: 0,
+            tabungan: 0,
+            sosial: 0
+        };
+
+        function formatRupiah(amount) {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0
+            }).format(amount);
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+            
+            const dayName = days[date.getDay()];
+            const day = date.getDate();
+            const month = months[date.getMonth()];
+            const year = date.getFullYear();
+            
+            return `${dayName}, ${day} ${month} ${year}`;
+        }
+
+        function calculateBudget() {
+            const incomeInput = document.getElementById('income');
+            const income = parseFloat(incomeInput.value);
+
+            if (!income || income <= 0) {
+                alert('Mohon masukkan jumlah pemasukan yang valid!');
+                return;
+            }
+
+            // Hitung pembagian berdasarkan persentase
+            const dailyNeeds = income * 0.5;  // 50%
+            const wants = income * 0.2;       // 20%
+            const savings = income * 0.2;     // 20%
+            const social = income * 0.1;      // 10%
+
+            // Simpan limit budget
+            budgetLimits = {
+                kebutuhan: dailyNeeds,
+                keinginan: wants,
+                tabungan: savings,
+                sosial: social
+            };
+
+            // Simpan data pemasukan ke localStorage
+            const incomeData = {
+                amount: income,
+                date: new Date().toISOString().split('T')[0],
+                timestamp: new Date().toISOString()
+            };
+            localStorage.setItem('monthlyIncome', JSON.stringify(incomeData));
+
+            // Update tampilan
+            document.getElementById('dailyNeeds').textContent = formatRupiah(dailyNeeds);
+            document.getElementById('wants').textContent = formatRupiah(wants);
+            document.getElementById('savings').textContent = formatRupiah(savings);
+            document.getElementById('social').textContent = formatRupiah(social);
+            document.getElementById('totalIncome').textContent = formatRupiah(income);
+            document.getElementById('spending').textContent = formatRupiah(dailyNeeds + wants);
+            document.getElementById('saving').textContent = formatRupiah(savings + social);
+
+            // Update sisa budget (awalnya sama dengan limit)
+            updateRemainingBudgets();
+
+            // Tampilkan hasil dan section pengeluaran
+            document.getElementById('budgetResult').classList.remove('hidden');
+            document.getElementById('expenseSection').classList.remove('hidden');
+            document.getElementById('saldomonitoring').classList.remove('hidden');
+            
+            // Set tanggal hari ini sebagai default
+            document.getElementById('expenseDate').value = new Date().toISOString().split('T')[0];
+            
+            // Update monitoring saldo awal
+            updateMonitoringSaldo();
+            updateMonthFilter();
+            updateMonthlyRecap();
+            
+            // Show success message and redirect to expense section
+            setTimeout(() => {
+                alert(`✅ Pemasukan berhasil disimpan!\n\n💰 Total: ${formatRupiah(income)}\n📅 Tanggal: ${new Date().toLocaleDateString('id-ID')}\n\n🎯 Sekarang Anda dapat mulai mencatat pengeluaran!`);
+                
+                // Scroll langsung ke section pengeluaran
+                document.getElementById('expenseSection').scrollIntoView({ 
+                    behavior: 'smooth' 
+                });
+                
+                // Focus ke field kategori pengeluaran
+                setTimeout(() => {
+                    document.getElementById('expenseType').focus();
+                }, 1000);
+            }, 500);
+        }
+
+        function addExpense() {
+            const date = document.getElementById('expenseDate').value;
+            const type = document.getElementById('expenseType').value;
+            const description = document.getElementById('expenseDescription').value;
+            const amount = parseFloat(document.getElementById('expenseAmount').value);
+
+            // Validasi input
+            if (!date || !type || !description || !amount || amount <= 0) {
+                alert('Mohon lengkapi semua field dengan benar!');
+                return;
+            }
+
+            // Hitung total pengeluaran saat ini untuk kategori tersebut
+            const currentSpent = expenses
+                .filter(expense => expense.type === type)
+                .reduce((total, expense) => total + expense.amount, 0);
+
+            const newTotal = currentSpent + amount;
+            const limit = budgetLimits[type];
+
+            // Peringatan jika melebihi budget
+            if (newTotal > limit) {
+                const overAmount = newTotal - limit;
+                const confirmMessage = `⚠️ Peringatan!\n\nPengeluaran ini akan melebihi budget ${type}:\n` +
+                    `• Budget: ${formatRupiah(limit)}\n` +
+                    `• Sudah terpakai: ${formatRupiah(currentSpent)}\n` +
+                    `• Pengeluaran baru: ${formatRupiah(amount)}\n` +
+                    `• Total akan menjadi: ${formatRupiah(newTotal)}\n` +
+                    `• Kelebihan: ${formatRupiah(overAmount)}\n\n` +
+                    `Apakah Anda yakin ingin melanjutkan?`;
+                
+                if (!confirm(confirmMessage)) {
+                    return;
+                }
+            }
+
+            // Tambah ke array expenses
+            const expense = {
+                id: Date.now(),
+                date: date,
+                type: type,
+                description: description,
+                amount: amount
+            };
+
+            expenses.push(expense);
+
+            // Save to localStorage
+            saveExpenses();
+
+            // Reset form
+            document.getElementById('expenseDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('expenseType').value = '';
+            document.getElementById('expenseDescription').value = '';
+            document.getElementById('expenseAmount').value = '';
+
+            // Update tampilan
+            updateExpenseDisplay();
+            updateExpenseSummary();
+            updateMonitoringSaldo();
+            updateMonthFilter();
+            updateMonthlyRecap();
+        }
+
+        function deleteExpense(id) {
+            expenses = expenses.filter(expense => expense.id !== id);
+            
+            // Save to localStorage
+            saveExpenses();
+            
+            updateExpenseDisplay();
+            updateExpenseSummary();
+            updateMonitoringSaldo();
+            updateMonthFilter();
+            updateMonthlyRecap();
+        }
+
+        function updateCurrentBalance() {
+            const type = document.getElementById('expenseType').value;
+            const amount = parseFloat(document.getElementById('expenseAmount').value) || 0;
+            
+            if (!type) {
+                document.getElementById('currentBalance').textContent = 'Pilih jenis pengeluaran';
+                document.getElementById('balanceAfter').textContent = '-';
+                return;
+            }
+
+            // Hitung saldo saat ini
+            const currentSpent = expenses
+                .filter(expense => expense.type === type)
+                .reduce((total, expense) => total + expense.amount, 0);
+            
+            const currentBalance = budgetLimits[type] - currentSpent;
+            const balanceAfter = currentBalance - amount;
+
+            document.getElementById('currentBalance').textContent = formatRupiah(currentBalance);
+            
+            // Update saldo setelah pengeluaran dengan warna
+            const balanceAfterElement = document.getElementById('balanceAfter');
+            balanceAfterElement.textContent = formatRupiah(balanceAfter);
+            
+            if (balanceAfter < 0) {
+                balanceAfterElement.className = 'w-full px-4 py-3 bg-red-50 border border-red-300 rounded-lg text-red-600 font-semibold';
+            } else if (balanceAfter === 0) {
+                balanceAfterElement.className = 'w-full px-4 py-3 bg-yellow-50 border border-yellow-300 rounded-lg text-yellow-600 font-semibold';
+            } else {
+                balanceAfterElement.className = 'w-full px-4 py-3 bg-green-50 border border-green-300 rounded-lg text-green-600 font-semibold';
+            }
+        }
+
+        function calculateRunningBalance(expenseId, type) {
+            // Sort expenses by date and time (oldest first untuk menghitung saldo berjalan)
+            const sortedExpenses = expenses
+                .filter(expense => expense.type === type)
+                .sort((a, b) => {
+                    const dateA = new Date(a.date + 'T' + (a.time || '00:00'));
+                    const dateB = new Date(b.date + 'T' + (b.time || '00:00'));
+                    return dateA - dateB;
+                });
+
+            let runningBalance = budgetLimits[type];
+            
+            for (let expense of sortedExpenses) {
+                runningBalance -= expense.amount;
+                if (expense.id === expenseId) {
+                    return runningBalance;
+                }
+            }
+            
+            return runningBalance;
+        }
+
+        function calculateBalanceBeforeExpense(expenseId, type) {
+            // Sort expenses by date and time (oldest first)
+            const sortedExpenses = expenses
+                .filter(expense => expense.type === type)
+                .sort((a, b) => {
+                    const dateA = new Date(a.date + 'T' + (a.time || '00:00'));
+                    const dateB = new Date(b.date + 'T' + (b.time || '00:00'));
+                    return dateA - dateB;
+                });
+
+            let runningBalance = budgetLimits[type];
+            
+            for (let expense of sortedExpenses) {
+                if (expense.id === expenseId) {
+                    return runningBalance; // Saldo sebelum expense ini
+                }
+                runningBalance -= expense.amount;
+            }
+            
+            return runningBalance;
+        }
+
+        function updateMonitoringSaldo() {
+            const summary = {
+                kebutuhan: 0,
+                keinginan: 0,
+                tabungan: 0,
+                sosial: 0
+            };
+
+            expenses.forEach(expense => {
+                summary[expense.type] += expense.amount;
+            });
+
+            // Update saldo tersisa
+            const remainingDaily = budgetLimits.kebutuhan - summary.kebutuhan;
+            const remainingWants = budgetLimits.keinginan - summary.keinginan;
+            const remainingSavings = budgetLimits.tabungan - summary.tabungan;
+            const remainingSocial = budgetLimits.sosial - summary.sosial;
+
+            document.getElementById('monitorDaily').textContent = formatRupiah(remainingDaily);
+            document.getElementById('monitorWants').textContent = formatRupiah(remainingWants);
+            document.getElementById('monitorSavings').textContent = formatRupiah(remainingSavings);
+            document.getElementById('monitorSocial').textContent = formatRupiah(remainingSocial);
+
+            // Update progress bar dan persentase
+            const percentDaily = budgetLimits.kebutuhan > 0 ? (summary.kebutuhan / budgetLimits.kebutuhan * 100) : 0;
+            const percentWants = budgetLimits.keinginan > 0 ? (summary.keinginan / budgetLimits.keinginan * 100) : 0;
+            const percentSavings = budgetLimits.tabungan > 0 ? (summary.tabungan / budgetLimits.tabungan * 100) : 0;
+            const percentSocial = budgetLimits.sosial > 0 ? (summary.sosial / budgetLimits.sosial * 100) : 0;
+
+            document.getElementById('progressDaily').style.width = Math.min(percentDaily, 100) + '%';
+            document.getElementById('progressWants').style.width = Math.min(percentWants, 100) + '%';
+            document.getElementById('progressSavings').style.width = Math.min(percentSavings, 100) + '%';
+            document.getElementById('progressSocial').style.width = Math.min(percentSocial, 100) + '%';
+
+            document.getElementById('percentDaily').textContent = Math.round(percentDaily) + '%';
+            document.getElementById('percentWants').textContent = Math.round(percentWants) + '%';
+            document.getElementById('percentSavings').textContent = Math.round(percentSavings) + '%';
+            document.getElementById('percentSocial').textContent = Math.round(percentSocial) + '%';
+
+            // Update warna berdasarkan status
+            updateMonitoringColors('monitorDaily', remainingDaily, 'progressDaily', percentDaily);
+            updateMonitoringColors('monitorWants', remainingWants, 'progressWants', percentWants);
+            updateMonitoringColors('monitorSavings', remainingSavings, 'progressSavings', percentSavings);
+            updateMonitoringColors('monitorSocial', remainingSocial, 'progressSocial', percentSocial);
+        }
+
+        function updateMonitoringColors(elementId, remaining, progressId, percent) {
+            const element = document.getElementById(elementId);
+            const progressElement = document.getElementById(progressId);
+            
+            if (remaining < 0) {
+                element.className = 'font-bold text-red-600';
+                progressElement.className = 'bg-red-500 h-2 rounded-full transition-all duration-500';
+            } else if (percent >= 90) {
+                element.className = 'font-bold text-yellow-600';
+                progressElement.className = 'bg-yellow-500 h-2 rounded-full transition-all duration-500';
+            } else {
+                // Warna asli berdasarkan kategori
+                if (elementId.includes('Daily')) {
+                    element.className = 'font-bold text-green-600';
+                    progressElement.className = 'bg-green-500 h-2 rounded-full transition-all duration-500';
+                } else if (elementId.includes('Wants')) {
+                    element.className = 'font-bold text-purple-600';
+                    progressElement.className = 'bg-purple-500 h-2 rounded-full transition-all duration-500';
+                } else if (elementId.includes('Savings')) {
+                    element.className = 'font-bold text-blue-600';
+                    progressElement.className = 'bg-blue-500 h-2 rounded-full transition-all duration-500';
+                } else if (elementId.includes('Social')) {
+                    element.className = 'font-bold text-orange-600';
+                    progressElement.className = 'bg-orange-500 h-2 rounded-full transition-all duration-500';
+                }
+            }
+        }
+
+        function updateExpenseDisplay() {
+            const expenseItems = document.getElementById('expenseItems');
+            const tableHeader = document.getElementById('expenseTableHeader');
+            
+            if (expenses.length === 0) {
+                expenseItems.innerHTML = '<p class="text-gray-500 text-center py-8">Belum ada pengeluaran yang dicatat</p>';
+                tableHeader.classList.add('hidden');
+                return;
+            }
+
+            // Tampilkan header tabel
+            tableHeader.classList.remove('hidden');
+
+            // Sort expenses by date (newest first untuk tampilan)
+            const sortedExpenses = expenses.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            const typeIcons = {
+                kebutuhan: '🛒',
+                keinginan: '🎯',
+                tabungan: '💎',
+                sosial: '🤝'
+            };
+
+            const typeNames = {
+                kebutuhan: 'Kebutuhan',
+                keinginan: 'Keinginan',
+                tabungan: 'Tabungan',
+                sosial: 'Sosial'
+            };
+
+            expenseItems.innerHTML = sortedExpenses.map(expense => {
+                const balanceBefore = calculateBalanceBeforeExpense(expense.id, expense.type);
+                const balanceAfter = calculateRunningBalance(expense.id, expense.type);
+                const balanceBeforeColor = balanceBefore < 0 ? 'text-red-600' : balanceBefore === 0 ? 'text-yellow-600' : 'text-emerald-600';
+                const balanceAfterColor = balanceAfter < 0 ? 'text-red-600' : balanceAfter === 0 ? 'text-yellow-600' : 'text-emerald-600';
+
+                return `
+                    <div class="expense-row rounded-2xl p-4 grid grid-cols-12 gap-3 items-center shadow-lg">
+                        <div class="col-span-2 text-xs text-gray-600 font-medium">
+                            ${formatDate(expense.date)}
+                        </div>
+                        <div class="col-span-2 flex items-center space-x-2">
+                            <div class="w-8 h-8 bg-gradient-to-br ${expense.type === 'kebutuhan' ? 'from-emerald-400 to-green-600' : expense.type === 'keinginan' ? 'from-purple-400 to-violet-600' : expense.type === 'tabungan' ? 'from-blue-400 to-cyan-600' : 'from-orange-400 to-red-500'} rounded-lg flex items-center justify-center">
+                                <span class="text-sm">${typeIcons[expense.type]}</span>
+                            </div>
+                            <span class="text-xs font-bold text-gray-700">${typeNames[expense.type]}</span>
+                        </div>
+                        <div class="col-span-2">
+                            <span class="text-sm font-bold text-gray-800">${expense.description}</span>
+                        </div>
+                        <div class="col-span-2">
+                            <span class="text-sm font-bold bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent">${formatRupiah(expense.amount)}</span>
+                        </div>
+                        <div class="col-span-2">
+                            <div class="text-xs space-y-1">
+                                <div class="font-bold ${balanceBeforeColor}">${formatRupiah(balanceBefore)}</div>
+                                <div class="text-gray-400 text-center font-medium">↓ -${formatRupiah(expense.amount)}</div>
+                            </div>
+                        </div>
+                        <div class="col-span-1">
+                            <span class="text-sm font-bold ${balanceAfterColor}">${formatRupiah(balanceAfter)}</span>
+                        </div>
+                        <div class="col-span-1">
+                            <button onclick="deleteExpense(${expense.id})" 
+                                    class="w-8 h-8 bg-gradient-to-br from-red-400 to-red-600 hover:from-red-500 hover:to-red-700 text-white rounded-lg flex items-center justify-center transition-all duration-200 hover:scale-110 shadow-lg">
+                                <span class="text-xs">🗑️</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateRemainingBudgets() {
+            const summary = {
+                kebutuhan: 0,
+                keinginan: 0,
+                tabungan: 0,
+                sosial: 0
+            };
+
+            expenses.forEach(expense => {
+                summary[expense.type] += expense.amount;
+            });
+
+            // Update jumlah terpakai
+            document.getElementById('usedDaily').textContent = formatRupiah(summary.kebutuhan);
+            document.getElementById('usedWants').textContent = formatRupiah(summary.keinginan);
+            document.getElementById('usedSavings').textContent = formatRupiah(summary.tabungan);
+            document.getElementById('usedSocial').textContent = formatRupiah(summary.sosial);
+
+            // Hitung dan update sisa budget
+            const remainingDaily = budgetLimits.kebutuhan - summary.kebutuhan;
+            const remainingWants = budgetLimits.keinginan - summary.keinginan;
+            const remainingSavings = budgetLimits.tabungan - summary.tabungan;
+            const remainingSocial = budgetLimits.sosial - summary.sosial;
+
+            document.getElementById('remainingDaily').textContent = formatRupiah(remainingDaily);
+            document.getElementById('remainingWants').textContent = formatRupiah(remainingWants);
+            document.getElementById('remainingSavings').textContent = formatRupiah(remainingSavings);
+            document.getElementById('remainingSocial').textContent = formatRupiah(remainingSocial);
+
+            // Ubah warna jika over budget
+            updateBudgetColors('remainingDaily', remainingDaily);
+            updateBudgetColors('remainingWants', remainingWants);
+            updateBudgetColors('remainingSavings', remainingSavings);
+            updateBudgetColors('remainingSocial', remainingSocial);
+        }
+
+        function updateBudgetColors(elementId, remaining) {
+            const element = document.getElementById(elementId);
+            if (remaining < 0) {
+                element.className = 'font-semibold text-red-600';
+            } else if (remaining === 0) {
+                element.className = 'font-semibold text-gray-600';
+            } else {
+                // Reset ke warna asli berdasarkan kategori
+                if (elementId.includes('Daily')) element.className = 'font-semibold text-green-600';
+                else if (elementId.includes('Wants')) element.className = 'font-semibold text-purple-600';
+                else if (elementId.includes('Savings')) element.className = 'font-semibold text-blue-600';
+                else if (elementId.includes('Social')) element.className = 'font-semibold text-orange-600';
+            }
+        }
+
+        function updateExpenseSummary() {
+            const summary = {
+                kebutuhan: 0,
+                keinginan: 0,
+                tabungan: 0,
+                sosial: 0
+            };
+
+            expenses.forEach(expense => {
+                summary[expense.type] += expense.amount;
+            });
+
+            document.getElementById('spentDaily').textContent = formatRupiah(summary.kebutuhan);
+            document.getElementById('spentWants').textContent = formatRupiah(summary.keinginan);
+            document.getElementById('spentSavings').textContent = formatRupiah(summary.tabungan);
+            document.getElementById('spentSocial').textContent = formatRupiah(summary.sosial);
+
+            const totalSpent = Object.values(summary).reduce((total, amount) => total + amount, 0);
+            document.getElementById('totalSpent').textContent = formatRupiah(totalSpent);
+
+            // Update sisa budget
+            updateRemainingBudgets();
+        }
+
+        function resetCalculator() {
+            // Clear localStorage
+            localStorage.removeItem('monthlyIncome');
+            localStorage.removeItem('monthlyExpenses');
+            
+            document.getElementById('income').value = '';
+            document.getElementById('budgetResult').classList.add('hidden');
+            document.getElementById('expenseSection').classList.add('hidden');
+            document.getElementById('saldomonitoring').classList.add('hidden');
+            expenses = [];
+            budgetLimits = { kebutuhan: 0, keinginan: 0, tabungan: 0, sosial: 0 };
+            document.getElementById('income').focus();
+            
+            alert('🔄 Data berhasil direset!\n\nSemua data pemasukan dan pengeluaran telah dihapus.');
+        }
+
+        // Fungsi untuk rekapitulasi bulanan
+        function updateMonthFilter() {
+            const monthFilter = document.getElementById('monthFilter');
+            const months = new Set();
+            
+            expenses.forEach(expense => {
+                const date = new Date(expense.date);
+                const monthYear = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                months.add(monthYear);
+            });
+
+            // Clear existing options except "Semua Transaksi"
+            monthFilter.innerHTML = '<option value="">Semua Transaksi</option>';
+            
+            // Add month options
+            Array.from(months).sort().reverse().forEach(monthYear => {
+                const [year, month] = monthYear.split('-');
+                const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+                const option = document.createElement('option');
+                option.value = monthYear;
+                option.textContent = `${monthNames[parseInt(month) - 1]} ${year}`;
+                monthFilter.appendChild(option);
+            });
+        }
+
+        function getFilteredExpenses() {
+            const selectedMonth = document.getElementById('monthFilter').value;
+            if (!selectedMonth) return expenses;
+            
+            return expenses.filter(expense => {
+                const date = new Date(expense.date);
+                const monthYear = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                return monthYear === selectedMonth;
+            });
+        }
+
+        function updateMonthlyRecap() {
+            const filteredExpenses = getFilteredExpenses();
+            const selectedMonth = document.getElementById('monthFilter').value;
+            
+            // Hitung total pengeluaran
+            const totalExpense = filteredExpenses.reduce((total, expense) => total + expense.amount, 0);
+            
+            // Hitung pendapatan (asumsi 1 bulan = pendapatan bulanan, semua transaksi = total pendapatan yang pernah diinput)
+            const totalIncome = parseFloat(document.getElementById('income').value) || 0;
+            const periodIncome = selectedMonth ? totalIncome : totalIncome;
+            
+            // Update ringkasan periode
+            document.getElementById('periodIncome').textContent = formatRupiah(periodIncome);
+            document.getElementById('periodExpense').textContent = formatRupiah(totalExpense);
+            document.getElementById('periodBalance').textContent = formatRupiah(periodIncome - totalExpense);
+            document.getElementById('expenseCount').textContent = `${filteredExpenses.length} transaksi`;
+            
+            // Update periode range
+            if (selectedMonth) {
+                const [year, month] = selectedMonth.split('-');
+                const monthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+                document.getElementById('periodRange').textContent = `${monthNames[parseInt(month) - 1]} ${year}`;
+            } else {
+                document.getElementById('periodRange').textContent = 'Semua periode';
+            }
+            
+            // Update status saldo
+            const balance = periodIncome - totalExpense;
+            const balanceStatusElement = document.getElementById('balanceStatus');
+            if (balance > 0) {
+                balanceStatusElement.textContent = '✅ Surplus';
+                balanceStatusElement.className = 'text-xs text-green-600 font-medium';
+            } else if (balance < 0) {
+                balanceStatusElement.textContent = '⚠️ Defisit';
+                balanceStatusElement.className = 'text-xs text-red-600 font-medium';
+            } else {
+                balanceStatusElement.textContent = '⚖️ Seimbang';
+                balanceStatusElement.className = 'text-xs text-gray-600 font-medium';
+            }
+            
+            // Update grafik kategori
+            updateCategoryChart(filteredExpenses);
+            
+            // Update tren harian
+            updateDailyTrend(filteredExpenses);
+        }
+
+        function updateCategoryChart(filteredExpenses) {
+            const categoryData = {
+                kebutuhan: 0,
+                keinginan: 0,
+                tabungan: 0,
+                sosial: 0
+            };
+
+            filteredExpenses.forEach(expense => {
+                categoryData[expense.type] += expense.amount;
+            });
+
+            const total = Object.values(categoryData).reduce((sum, amount) => sum + amount, 0);
+            
+            const categoryInfo = {
+                kebutuhan: { name: 'Kebutuhan Harian', icon: '🛒', color: 'from-emerald-400 to-green-600' },
+                keinginan: { name: 'Keinginan', icon: '🎯', color: 'from-purple-400 to-violet-600' },
+                tabungan: { name: 'Tabungan', icon: '💎', color: 'from-blue-400 to-cyan-600' },
+                sosial: { name: 'Sosial', icon: '🤝', color: 'from-orange-400 to-red-500' }
+            };
+
+            const chartHTML = Object.entries(categoryData).map(([type, amount]) => {
+                const percentage = total > 0 ? (amount / total * 100) : 0;
+                const info = categoryInfo[type];
+                
+                return `
+                    <div class="text-center p-4 bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-200 shadow-sm">
+                        <div class="w-16 h-16 bg-gradient-to-br ${info.color} rounded-2xl mx-auto mb-3 flex items-center justify-center shadow-lg">
+                            <span class="text-2xl">${info.icon}</span>
+                        </div>
+                        <p class="text-sm font-bold text-gray-800 mb-2">${info.name}</p>
+                        <p class="text-lg font-bold text-gray-700 mb-2">${formatRupiah(amount)}</p>
+                        <div class="w-full bg-gray-200 rounded-full h-2 mb-2">
+                            <div class="bg-gradient-to-r ${info.color} h-2 rounded-full transition-all duration-500" style="width: ${percentage}%"></div>
+                        </div>
+                        <p class="text-xs text-gray-500 font-medium">${percentage.toFixed(1)}%</p>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('categoryChart').innerHTML = chartHTML;
+        }
+
+        function updateDailyTrend(filteredExpenses) {
+            // Group expenses by date
+            const dailyData = {};
+            
+            filteredExpenses.forEach(expense => {
+                const date = expense.date;
+                if (!dailyData[date]) {
+                    dailyData[date] = 0;
+                }
+                dailyData[date] += expense.amount;
+            });
+
+            // Sort by date
+            const sortedDates = Object.keys(dailyData).sort();
+            
+            if (sortedDates.length === 0) {
+                document.getElementById('dailyTrend').innerHTML = `
+                    <div class="text-center py-8">
+                        <div class="w-16 h-16 bg-gray-100 rounded-full mx-auto mb-4 flex items-center justify-center">
+                            <span class="text-2xl text-gray-400">📈</span>
+                        </div>
+                        <p class="text-gray-500">Tidak ada data untuk periode ini</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const maxAmount = Math.max(...Object.values(dailyData));
+            
+            const trendHTML = sortedDates.map(date => {
+                const amount = dailyData[date];
+                const percentage = maxAmount > 0 ? (amount / maxAmount * 100) : 0;
+                
+                return `
+                    <div class="flex items-center space-x-4 p-3 bg-gradient-to-r from-gray-50 to-white rounded-xl border border-gray-200">
+                        <div class="w-20 text-sm font-medium text-gray-600">
+                            ${formatDate(date).split(',')[1].trim()}
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-sm font-bold text-gray-800">${formatRupiah(amount)}</span>
+                                <span class="text-xs text-gray-500">${filteredExpenses.filter(e => e.date === date).length} transaksi</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-gradient-to-r from-indigo-400 to-purple-500 h-2 rounded-full transition-all duration-500" style="width: ${percentage}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('dailyTrend').innerHTML = trendHTML;
+        }
+
+        function downloadPDF() {
+            const filteredExpenses = getFilteredExpenses();
+            const selectedMonth = document.getElementById('monthFilter').value;
+            
+            // Create PDF content
+            let pdfContent = `
+LAPORAN KEUANGAN BULANAN
+Elite Finance Management System
+================================
+
+PERIODE: ${selectedMonth ? document.getElementById('periodRange').textContent : 'Semua Transaksi'}
+Tanggal Cetak: ${new Date().toLocaleDateString('id-ID')}
+
+RINGKASAN KEUANGAN:
+- Total Pendapatan: ${document.getElementById('periodIncome').textContent}
+- Total Pengeluaran: ${document.getElementById('periodExpense').textContent}
+- Sisa Saldo: ${document.getElementById('periodBalance').textContent}
+- Jumlah Transaksi: ${filteredExpenses.length}
+
+DETAIL PENGELUARAN PER KATEGORI:
+`;
+
+            const categoryData = {
+                kebutuhan: 0,
+                keinginan: 0,
+                tabungan: 0,
+                sosial: 0
+            };
+
+            filteredExpenses.forEach(expense => {
+                categoryData[expense.type] += expense.amount;
+            });
+
+            const categoryNames = {
+                kebutuhan: 'Kebutuhan Harian',
+                keinginan: 'Keinginan',
+                tabungan: 'Tabungan',
+                sosial: 'Sosial'
+            };
+
+            Object.entries(categoryData).forEach(([type, amount]) => {
+                pdfContent += `- ${categoryNames[type]}: ${formatRupiah(amount)}\n`;
+            });
+
+            pdfContent += `\nDETAIL TRANSAKSI:\n`;
+            pdfContent += `${'='.repeat(80)}\n`;
+            pdfContent += `${'Tanggal'.padEnd(15)} ${'Kategori'.padEnd(15)} ${'Deskripsi'.padEnd(25)} ${'Jumlah'.padStart(15)}\n`;
+            pdfContent += `${'-'.repeat(80)}\n`;
+
+            filteredExpenses.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(expense => {
+                const date = new Date(expense.date).toLocaleDateString('id-ID');
+                const category = categoryNames[expense.type];
+                const description = expense.description.length > 23 ? expense.description.substring(0, 20) + '...' : expense.description;
+                const amount = formatRupiah(expense.amount);
+                
+                pdfContent += `${date.padEnd(15)} ${category.padEnd(15)} ${description.padEnd(25)} ${amount.padStart(15)}\n`;
+            });
+
+            // Create and download file
+            const blob = new Blob([pdfContent], { type: 'text/plain;charset=utf-8' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Laporan-Keuangan-${selectedMonth || 'Semua'}-${new Date().toISOString().split('T')[0]}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
+            alert('📄 Laporan berhasil diunduh dalam format TXT!\n\nFile dapat dibuka dengan aplikasi text editor atau diimpor ke aplikasi lain.');
+        }
+
+        function downloadExcel() {
+            const filteredExpenses = getFilteredExpenses();
+            const selectedMonth = document.getElementById('monthFilter').value;
+            
+            // Create CSV content
+            let csvContent = 'data:text/csv;charset=utf-8,';
+            
+            // Header
+            csvContent += 'LAPORAN KEUANGAN BULANAN - Elite Finance\n';
+            csvContent += `Periode:,${selectedMonth ? document.getElementById('periodRange').textContent : 'Semua Transaksi'}\n`;
+            csvContent += `Tanggal Cetak:,${new Date().toLocaleDateString('id-ID')}\n\n`;
+            
+            // Summary
+            csvContent += 'RINGKASAN KEUANGAN\n';
+            csvContent += 'Kategori,Jumlah\n';
+            csvContent += `Total Pendapatan,${document.getElementById('periodIncome').textContent.replace(/[^\d,-]/g, '')}\n`;
+            csvContent += `Total Pengeluaran,${document.getElementById('periodExpense').textContent.replace(/[^\d,-]/g, '')}\n`;
+            csvContent += `Sisa Saldo,${document.getElementById('periodBalance').textContent.replace(/[^\d,-]/g, '')}\n`;
+            csvContent += `Jumlah Transaksi,${filteredExpenses.length}\n\n`;
+            
+            // Category breakdown
+            csvContent += 'PENGELUARAN PER KATEGORI\n';
+            csvContent += 'Kategori,Jumlah\n';
+            
+            const categoryData = {
+                kebutuhan: 0,
+                keinginan: 0,
+                tabungan: 0,
+                sosial: 0
+            };
+
+            filteredExpenses.forEach(expense => {
+                categoryData[expense.type] += expense.amount;
+            });
+
+            const categoryNames = {
+                kebutuhan: 'Kebutuhan Harian',
+                keinginan: 'Keinginan',
+                tabungan: 'Tabungan',
+                sosial: 'Sosial'
+            };
+
+            Object.entries(categoryData).forEach(([type, amount]) => {
+                csvContent += `${categoryNames[type]},${amount}\n`;
+            });
+            
+            // Transaction details
+            csvContent += '\nDETAIL TRANSAKSI\n';
+            csvContent += 'Tanggal,Kategori,Deskripsi,Jumlah\n';
+            
+            filteredExpenses.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(expense => {
+                const date = new Date(expense.date).toLocaleDateString('id-ID');
+                const category = categoryNames[expense.type];
+                const description = expense.description.replace(/,/g, ';'); // Replace commas to avoid CSV issues
+                csvContent += `${date},${category},${description},${expense.amount}\n`;
+            });
+
+            // Create and download file
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement('a');
+            link.setAttribute('href', encodedUri);
+            link.setAttribute('download', `Laporan-Keuangan-${selectedMonth || 'Semua'}-${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            alert('📊 Laporan berhasil diunduh dalam format CSV!\n\nFile dapat dibuka dengan Microsoft Excel, Google Sheets, atau aplikasi spreadsheet lainnya.');
+        }
+
+        // Load saved income data on page load
+        function loadSavedIncome() {
+            const savedIncome = localStorage.getItem('monthlyIncome');
+            if (savedIncome) {
+                const incomeData = JSON.parse(savedIncome);
+                const today = new Date().toISOString().split('T')[0];
+                const savedDate = incomeData.date;
+                
+                // Check if income is from current month
+                const savedMonth = savedDate.substring(0, 7); // YYYY-MM
+                const currentMonth = today.substring(0, 7);
+                
+                if (savedMonth === currentMonth) {
+                    document.getElementById('income').value = incomeData.amount;
+                    calculateBudget();
+                }
+            }
+        }
+
+        // Load saved expenses from localStorage
+        function loadSavedExpenses() {
+            const savedExpenses = localStorage.getItem('monthlyExpenses');
+            if (savedExpenses) {
+                expenses = JSON.parse(savedExpenses);
+                updateExpenseDisplay();
+                updateExpenseSummary();
+                updateMonitoringSaldo();
+                updateMonthFilter();
+                updateMonthlyRecap();
+            }
+        }
+
+        // Save expenses to localStorage
+        function saveExpenses() {
+            localStorage.setItem('monthlyExpenses', JSON.stringify(expenses));
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSavedIncome();
+            loadSavedExpenses();
+        });
+
+        // Allow Enter key to calculate
+        document.getElementById('income').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                calculateBudget();
+            }
+        });
+
+        // Update balance when amount changes
+        document.getElementById('expenseAmount').addEventListener('input', function() {
+            updateCurrentBalance();
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'987c9df2b04f40bb',t:'MTc1OTMyODU5OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
